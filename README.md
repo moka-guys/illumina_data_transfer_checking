@@ -109,14 +109,18 @@ python3 data_check.py /media/data1/share/251204_A01229_0641_AHGCTNDRX7
 ```
 
 Point the script at the **run root** (the folder that contains the XML files and
-`Data/`). The command:
+`Data/`). The script automatically detects the data layout and performs the following:
 
 1. Confirms `RunInfo.xml` exists and is non-empty.
 2. Parses `RunParameters.xml` to determine cycle counts for Read 1, both index reads,
    and Read 2.
 3. Discovers all lane directories under `Data/Intensities/BaseCalls/`.
-4. Builds the list of expected `.cbcl` files by inspecting the filesystem (falling
-   back to `RunInfo.xml` tiles if none are present yet).
+4. Detects Format:
+
+    - CBCL (Cycle-based) for NextSeq/NovaSeq: Looks for cycle directories (C<cycle>.1) and identifies tile files.
+
+    - Flat BCL (MiSeq): Identifies individual .bcl or .bcl.gz files if cycle directories are absent.
+
 5. Iterates over every cycle directory (`C<cycle>.1`) and verifies each required file.
 6. Generates `filecheck.txt` containing either a **SUCCESS** or **ERROR** string in the Illumina runfolder to be used as a flagfile for automation.
 
